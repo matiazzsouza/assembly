@@ -1,0 +1,87 @@
+TITLE Numero
+.MODEL SMALL
+.STACK 100h
+.DATA
+    MSG DB "Digite um caractere: $"
+    NUM DB 10,13,"O caractere digitado e um numero.$"
+    LET DB 10,13,"O caractere digitado e uma letra.$"
+    DESC DB 10,13,"O caractere digitado e um caractere desconhecido.$"
+    LETM DB 10,13,'O caractere digitado e uma letra maisucula $'
+.CODE
+    MAIN PROC
+
+    ;PASSA DATA PARA AX PARA ACESSAR AS INFORMACOES
+    MOV AX,@DATA
+    MOV DS,AX 
+
+    ;PRINTA A PRIMEIRA MENSAGEM
+    MOV AH,9
+    MOV DX,OFFSET MSG
+    INT 21H
+
+    ;PEDE PARA O USUARIO DIGITAR
+    MOV AH,1
+    INT 21H
+
+    ;PASSA O CONTEUDO DE AL PARA BL
+    MOV BL,AL
+
+    ;COMPARA O CONTEUDO COM O NUMERO 0(48 NA TABELA ASC) PARA SABER SE E MENOR 
+    CMP BL,48
+    JB CASOS ;CASO SEJA MENOR PULA PARA CASOS
+
+    CMP BL,57
+    JA CASOS ;CASO SEJA MAIOR QUE 9(57 NA TABELA ASC) ELE PULA PARA CASOS PARA CONTINUAR ANALISANDO
+
+    ;SE PASSAR POR TUDO ELE E UM NUMERO 
+    MOV AH,9
+    MOV DX,OFFSET NUM
+    INT 21H
+
+    ;PULA PARA O FINAL
+    JMP FIM 
+
+CASOS:
+    MINUSCULA: 
+            CMP BL, 97 
+            JB MAIUSCULA ;COMPARA COM A TABELA ASC A LETRA A CASO FOR MENOR PULA(MINUSCULA)
+            
+            CMP BL, 122
+            JA MAIUSCULA; COMPARA COM A TABELA ASC A LETRA Z CASO FOR MAIOR PULO
+
+            ;CASO PASSE PELOS DOIS É UMA LETRA MINUSCULA
+            MOV AH,9
+            MOV DX,OFFSET LET
+            INT 21H
+
+            JMP FIM
+
+    MAIUSCULA:
+            CMP BL, 65
+            JB DESCONHECIDO ;CASO SEJA MENOR QUE (A) NA TABELA ASC PULA (MAIUSCULA) PARA A FUNCAO DESC
+            
+            CMP BL, 90 
+            JA DESCONHECIDO ;CASO SEJA MAIOR QUE Z NA TABELA PULA PARA DESC
+            
+            ;PRINTA CASO PASSE DAS DUAS ANTERIORES
+            MOV AH,9
+            MOV DX,OFFSET LETM
+            INT 21H
+        
+        JMP FIM
+
+    DESCONHECIDO: 
+        
+        ;PRINTA QUE ESSE CARACTERE E DESCONHECIDO E NAO FAZ PARTE DE NENHUMA DAS OPCOES 
+        MOV AH,9
+        MOV DX,OFFSET DESC
+        INT 21H
+
+        JMP FIM  
+
+    FIM:
+        MOV AH,4CH
+        INT 21H
+        
+    MAIN ENDP        
+END MAIN

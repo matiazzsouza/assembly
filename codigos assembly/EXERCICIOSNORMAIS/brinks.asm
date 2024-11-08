@@ -1,0 +1,88 @@
+title zoeira
+.MODEL SMALL 
+.STACK 100H
+.DATA
+    MSG DB 13,10,'OLA, DIGITE UM NUMERO $'
+    ERRO DB 10,13,'NUMERO NAO ENCONTRADO $'
+    VLT DB 10,13,'APERTE ENTER PARA VOLTAR $'
+    MSG2 DB 10,13,'DIGITE OUTRO NUMERO $'
+    RES DB 10,13,'O RESULTADO DA SOMA E IGUAL: $'
+    NUM1 DB 10 DUP(9)
+
+.CODE
+
+    MAIN PROC
+    
+INICIO:
+    MOV AX, @DATA
+    MOV DS, AX
+
+    MOV AH, 9
+    MOV DX, OFFSET MSG
+    INT 21H
+
+    MOV AH, 1
+    INT 21H
+
+    MOV BL, AL
+    
+    CMP BL, 48
+    JB VOLTA
+
+    CMP BL, 57
+    JA VOLTA
+
+    MOV AH, 9
+    MOV DX, OFFSET MSG2
+    INT 21H
+
+    MOV AH, 1
+    INT 21H
+
+    MOV CL, AL
+
+    CMP CL, 48
+    JB VOLTA
+
+    CMP CL, 57
+    JA VOLTA
+
+    SUB BL, 48
+    SUB CL, 48
+
+    ADD BL, CL
+
+    ADD BL, 48
+
+    MOV AH, 9
+    MOV DX, OFFSET RES
+    INT 21H
+
+    MOV DL, BL
+    MOV AH, 2
+    INT 21h
+
+
+    JMP FIM
+
+VOLTA:
+    MOV  AH, 9
+    MOV DX, OFFSET ERRO
+    INT 21H
+
+    MOV AH, 9
+    MOV DX, OFFSET VLT
+    INT 21H
+
+    MOV AH, 1
+    INT 21H
+
+    JMP INICIO
+
+FIM:
+    MOV AH, 4CH
+    INT 21H
+
+
+MAIN ENDP
+END MAIN
